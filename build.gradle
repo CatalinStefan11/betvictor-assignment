@@ -1,0 +1,6 @@
+group 'com.betvictor'
+
+repositories {
+  mavenCentral()
+}
+

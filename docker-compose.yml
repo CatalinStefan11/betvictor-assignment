@@ -1,0 +1,44 @@
+version: '2'
+services:
+  processor:
+    container_name: processor
+    build:
+      context: processor
+    image: processor:latest
+    ports:
+    - 127.0.0.1:8080:8080
+    depends_on:
+    - kafka
+  repository:
+    container_name: repository
+    build:
+      context: repository
+    image: repository:latest
+    ports:
+    - 127.0.0.1:8090:8090
+    links:
+    - mongo-db
+    - kafka:kafka
+    depends_on:
+    - kafka
+  mongo-db:
+    image: mongo:latest
+    container_name: mongo-db
+    ports:
+    - 27017:27017    
+  zookeeper:
+    image: wurstmeister/zookeeper:latest
+    container_name: zookeper
+    ports:
+    - 2181:2181
+  kafka:
+    image: wurstmeister/kafka:latest
+    container_name: kafka
+    ports:
+    - 9092:9092
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: kafka
+      KAFKA_CREATE_TOPIC: "words.processed:4:1"
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    depends_on:
+    - zookeeper  
